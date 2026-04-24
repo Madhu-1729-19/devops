@@ -30,17 +30,17 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                sh 'mvn test'
-            }
-        }
+stage('Run Tests') {
+    steps {
+        sh 'mvn clean test'
+    }
+}
 
-        stage('Publish Test Results') {
-            steps {
-                junit '**/surefire-reports/TEST-*.xml'
-            }
-        }
+stage('Publish Test Results') {
+    steps {
+        junit allowEmptyResults: true, testResults: '**/target/surefire-reports/TEST-*.xml'
+    }
+}
     }
 
     post {
