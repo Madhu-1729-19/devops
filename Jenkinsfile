@@ -1,80 +1,38 @@
 pipeline {
-    agent any
-
-    triggers {
-        pollSCM('H/5 * * * *')
+    agent {
+        label 'Madhu-1'   // same as your agent pool
     }
 
     tools {
-        jdk 'jdk11'
-        maven 'maven3'
+        // Make sure this JDK is configured in Jenkins Global Tool Configuration
+        jdk 'JDK11'
+        maven 'Maven3'
     }
 
     stages {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Madhu-1729-19/devops.git'
+                git branch: 'main', url: 'https://your-repo-url.git'
             }
         }
 
-        stage('Build WAR') {
+        stage('Build with Maven') {
             steps {
-                sh 'mvn clean package'
+                bat 'mvn clean package -Xmx3072m'
             }
         }
 
-        stage('Verify WAR') {
+        stage('Test Results') {
             steps {
-                sh 'ls -lh target/'
+                junit '**/surefire-reports/TEST-*.xml'
             }
         }
 
         stage('Archive WAR') {
             steps {
-                archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
             }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'mvn test || true'
-            }
-        }
-
-        stage('Publish Test Results') {
-            steps {
-                junit allowEmptyResults: true,
-                      testResults: '**/target/surefire-reports/*.xml'
-            }
-        }
-
-        stage('Deploy to Tomcat (Linux-safe)') {
-            steps {
-                sh '''
-                echo "Deploying WAR..."
-
-                cp target/*.war /tmp/ssp.war
-
-                echo "WAR copied (simulate deploy) ✔"
-                '''
-            }
-        }
-
-        stage('App URL') {
-            steps {
-                echo "APP URL: http://localhost:8080/ssp"
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'BUILD SUCCESS ✔'
-        }
-        failure {
-            echo 'BUILD FAILED ❌'
         }
     }
 }
