@@ -1,8 +1,8 @@
 pipeline {
-    agent any   // uses default Jenkins node (master or available agent)
+    agent any
 
     tools {
-        jdk 'JDK11'
+        jdk 'JDK17'
         maven 'Maven3'
     }
 
@@ -22,7 +22,7 @@ pipeline {
 
         stage('Test Results') {
             steps {
-                junit '**/surefire-reports/TEST-*.xml'
+                junit allowEmptyResults: true, testResults: '**/surefire-reports/TEST-*.xml'
             }
         }
 
