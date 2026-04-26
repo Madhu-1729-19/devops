@@ -1,10 +1,7 @@
 pipeline {
-    agent {
-        label 'Madhu-1'   // same as your agent pool
-    }
+    agent any   // uses default Jenkins node (master or available agent)
 
     tools {
-        // Make sure this JDK is configured in Jenkins Global Tool Configuration
         jdk 'JDK11'
         maven 'Maven3'
     }
@@ -19,7 +16,7 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                bat 'mvn clean package -Xmx3072m'
+                bat 'mvn clean package'
             }
         }
 
